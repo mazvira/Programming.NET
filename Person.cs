@@ -1,77 +1,62 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Lab2
 {
-    class Person
+    internal class Person
     {
-        private string _name;
-        private string _lastName;
-        private string _email;
+        private readonly string _name;
+        private readonly string _lastName;
+        private readonly string _email;
         private DateTime _dateOfBirth;
-        private int _age;
-      //private string _chineseSign;
-      //private string _sunSign;
+        private readonly int _age;
 
-        public Person(string name, string lastName, string email, DateTime dateOfBirth)
+        internal Person(string name, string lastName, string email, DateTime dateOfBirth)
         {
             _name = name;
             _lastName = lastName;
             _email = email;
             _dateOfBirth = dateOfBirth;
             _age = CountAge();
-        //    _chineseSign = setChineseHoroscope();
-         //   _sunSign = SetSunHoroscope();
         }
 
-        public Person(string name, string lastName, string email) : this(name, lastName, email, DateTime.MinValue)
+        internal Person(string name, string lastName, string email) : this(name, lastName, email, DateTime.MinValue)
         {
             _name = name;
             _lastName = lastName;
             _email = email;
         }
 
-        public Person(string name, string lastName, DateTime dateOfBirth) : this(name, lastName, "user@example.con", DateTime.MinValue)
+        internal Person(string name, string lastName, DateTime dateOfBirth) : this(name, lastName, "user@example.con", DateTime.MinValue)
         {
             _name = name;
             _lastName = lastName;
             _dateOfBirth = dateOfBirth;
             _age = CountAge();
-           // _chineseSign = setChineseHoroscope();
-            //_sunSign = SetSunHoroscope();
         }
 
-        public string Name
+        internal string Name
         {
             get { return _name; }
-            private set { _name = value; }
         }
 
-        public string LastName
+        internal string LastName
         {
             get { return _lastName; }
-            private set { _lastName = value; }
         }
 
-        public string Email
+        internal string Email
         {
             get { return _email; }
-            private set { _email = value; }
         }
 
-        public DateTime DateOfBirth
+        internal DateTime DateOfBirth
         {
             get { return _dateOfBirth; }
-            private set { _dateOfBirth = value; }
         }
 
-        public int Age
+        internal int Age
         {
             get { return _age; }
-            private set { _age = value; }
         }
     
         internal bool IsAdult
@@ -86,7 +71,7 @@ namespace Lab2
 
         internal string ChineseSign
         {
-            get { return setChineseHoroscope(); }
+            get { return SetChineseHoroscope(); }
         }
 
         internal bool IsBirthday
@@ -98,7 +83,7 @@ namespace Lab2
         {
             int age = DateTime.Today.Year - _dateOfBirth.Year;
 
-            if ((_dateOfBirth.Month > DateTime.Today.Month) || (_dateOfBirth.Month == DateTime.Today.Month && _dateOfBirth.Day > DateTime.Today.Day))
+            if (_dateOfBirth.Month > DateTime.Today.Month || (_dateOfBirth.Month == DateTime.Today.Month && _dateOfBirth.Day > DateTime.Today.Day))
                 age--;
             if (age > 135 || age < 0)
                 throw new Exception();
@@ -173,7 +158,7 @@ namespace Lab2
             return " ";
         }
 
-        private string setChineseHoroscope()
+        private string SetChineseHoroscope()
         {
             int iChzod = _dateOfBirth.Year - ((_dateOfBirth.Year / 12) * 12);
             switch (iChzod)

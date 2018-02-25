@@ -1,18 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 
 namespace Lab2
 {
-    class MainWindowViewModel : INotifyPropertyChanged
+    internal class MainWindowViewModel : INotifyPropertyChanged
     {
-        private DateTime _dateOfBirth;
+        private DateTime _dateOfBirth = DateTime.Today;
         private string _age;
         private string _westHoroscope;
         private string _chineseHoroscope;
@@ -23,12 +20,10 @@ namespace Lab2
         private string _isAdult;
         private bool _canExecute;
         private RelayCommand _countAge;
-        private Action<bool> _showLoaderAction;
-        private readonly Action _closeAction;
+        private readonly Action<bool> _showLoaderAction;
 
-        public MainWindowViewModel(Action close, Action<bool> showLoader)
+        public MainWindowViewModel(Action<bool> showLoader)
         {
-            _closeAction = close;
             _showLoaderAction = showLoader;
             CanExecute = true;
         }
@@ -48,8 +43,8 @@ namespace Lab2
         }
         public string Age
         {
-            get { return _age; }
-            set { _age = value; OnPropertyChanged(); }
+            get { return String.IsNullOrWhiteSpace(_age)?"":$"You are {_age} years of old"; }
+            private set { _age = value; OnPropertyChanged(); }
         }
 
         public RelayCommand CountAge
@@ -61,13 +56,13 @@ namespace Lab2
         }
         public string WestHoroscope
         {
-            get { return _westHoroscope; }
-            set { _westHoroscope = value; OnPropertyChanged(); }
+            get { return String.IsNullOrWhiteSpace(_westHoroscope) ? "" : $"In the Western horoscope you are {_westHoroscope}"; }
+            private set { _westHoroscope = value; OnPropertyChanged(); }
         }
 
         public string ChineseHoroscope
         {
-            get { return _chineseHoroscope; }
+            get { return String.IsNullOrWhiteSpace(_chineseHoroscope) ? "" : $"In the Chinese horoscope you are {_chineseHoroscope}"; }
             set { _chineseHoroscope = value; OnPropertyChanged(); }
         }
 
@@ -77,10 +72,20 @@ namespace Lab2
             set { _name = value; OnPropertyChanged(); }
         }
 
+        public string NameForResult
+        {
+            get { return String.IsNullOrWhiteSpace(_name) ? "" : $"Your name is {_name}"; }
+        }
+
         public string LastName
         {
             get { return _lastName; }
             set { _lastName = value; OnPropertyChanged(); }
+        }
+
+        public string LastNameForResult
+        {
+            get { return String.IsNullOrWhiteSpace(_lastName) ? "" : $"Your surname is {_lastName}"; }
         }
 
         public string Email
@@ -89,27 +94,32 @@ namespace Lab2
             set { _email = value; OnPropertyChanged(); }
         }
 
+        public string EmailForResult
+        {
+            get { return String.IsNullOrWhiteSpace(_email) ? "" : $"Your email is {_email}"; }
+        }
+
         public string IsBirthday
         {
-            get { return _isBirhday; }
-            set { _isBirhday = value; OnPropertyChanged(); }
+            get { return String.IsNullOrWhiteSpace(_isBirhday) ? "" : $"You have birthday today: {_isBirhday}"; }
+            private set { _isBirhday = value; OnPropertyChanged(); }
         }
 
         public string IsAdult
         {
-            get { return _isAdult; }
-            set { _isAdult = value; OnPropertyChanged(); }
+            get { return String.IsNullOrWhiteSpace(_isBirhday) ? "" : $"You are adult: {_isAdult}"; }
+            private set { _isAdult = value; OnPropertyChanged(); }
         }
 
         private async void CountAgeImpl(object o)
         {
             _showLoaderAction.Invoke(true);
             CanExecute = false;
-            await Task.Run((() =>
+            await Task.Run(() =>
             {
                 StationManager.CurrentPerson = PersonAdapter.CreatePerson(_name, _lastName, _email,_dateOfBirth);
                 Thread.Sleep(3000);
-            }));
+            });
             if (StationManager.CurrentPerson == null)
                 MessageBox.Show($"Date of birth {_dateOfBirth} is  invalid.");
 
@@ -117,15 +127,14 @@ namespace Lab2
             {
                 if (_dateOfBirth.DayOfYear == DateTime.Today.DayOfYear)
                     MessageBox.Show("Happy Birthday");
-                Name = StationManager.CurrentPerson.Name;
-                LastName = StationManager.CurrentPerson.LastName;
-                Email = StationManager.CurrentPerson.Email;
+                OnPropertyChanged(nameof(NameForResult));
+                OnPropertyChanged(nameof(LastNameForResult));
+                OnPropertyChanged(nameof(EmailForResult));
                 Age = $"{StationManager.CurrentPerson.Age}";
                 WestHoroscope = StationManager.CurrentPerson.SunSign;
                 ChineseHoroscope = StationManager.CurrentPerson.ChineseSign;
                 IsBirthday = $"{ StationManager.CurrentPerson.IsBirthday}";
                 IsAdult= $"{ StationManager.CurrentPerson.IsAdult}";
-                _closeAction.Invoke();
             }
             CanExecute = true;
             _showLoaderAction.Invoke(false);
